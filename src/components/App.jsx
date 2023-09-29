@@ -15,6 +15,23 @@ export default class App extends Component {
     filter: '',
   };
 
+  componentDidMount() {
+    const stringifiedContacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(stringifiedContacts) ?? [];
+    if (parsedContacts.length > 0) {
+      this.setState({
+        contacts: parsedContacts,
+      });
+    }
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (this.state.contacts.length !== prevState.contacts.length) {
+      const stringifiedContacts = JSON.stringify(this.state.contacts);
+      localStorage.setItem('contacts', stringifiedContacts);
+    }
+  }
+
   onDelete = name => {
     this.setState(prevState => ({
       contacts: prevState.contacts.filter(contact => contact.name !== name),
@@ -22,7 +39,6 @@ export default class App extends Component {
   };
 
   handleContact = newContact => {
-    console.dir(newContact.name);
     if (
       this.state.contacts.some(
         name => name.name.toLowerCase() === newContact.name.toLowerCase()
